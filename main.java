@@ -1,128 +1,63 @@
-package Ex3_6680170;
-
 import java.io.*;
 import java.util.*;
 
 class Player {
-    public static final int CURRENT_YEAR = 2025;
-    private String name;
-    protected int birthyear;
+public static final int CURRENT_YEAR = 2025;
+private String name;
+protected int birthyear, age;
+public Player(String nm, int by) { name = nm; birthyear = by; }
+public String getName() { return name; }
+public void printPersonalData() { /* override this in child class */ }
+public void printStat() { /* override this in child class */ }
+}
 
-    public Player(String nm, int by) {
-        name = nm;
-        birthyear = by;
+/* Football Player */
+class footballPlayer extends Player {
+    private int[] games = new int[3];
+    private int[] goals = new int[3];
+    private double avgGoals;
+
+    public footballPlayer(String name, int birthyear, String season21_22, String season22_23, String season23_24){
+        super(name, birthyear);
+        parseStats(season21_22, 0);
+        parseStats(season22_23, 1);
+        parseStats(season23_24, 2);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void printPersonalData() {
-        // Override in child class
-    }
-
-    public void printStat() {
-        // Override in child class
+    private void parseStats(String seasonData, int index){ /* extract game and goal stats from string */
+        String[] parts = seasonData.split(":");
+        games[index] = Integer.parseInt(parts[0].trim());
+        goals[index] = Integer.parseInt(parts[1].trim());
     }
 }
 
-class FootballPlayer extends Player {
+/* Baseketball Player */
+class baseketballPlayer extends Player {
     private int totalGames;
-    private int totalMinutes;
-    private int lastSeasonGoals;
+    private int totalMins;
+    private int totalPts;
+    private double avgMins;
+    private double avgPts;
 
-    public FootballPlayer(String nm, int by, int tg, int tm, int lg) {
-        super(nm, by);
-        totalGames = tg;
-        totalMinutes = tm;
-        lastSeasonGoals = lg;
-    }
+    public baseketballPlayer(String name, int birthyear, int games, int mins, int points){
+        super(name, birthyear);
 
-    @Override
-    public void printPersonalData() {
-        System.out.printf("Football Player: %s, Birth Year: %d, Age: %d%n", getName(), birthyear, NewMain.cal_age(birthyear));
-    }
-
-    @Override
-    public void printStat() {
-        System.out.printf("Total Games: %d, Total Minutes: %d, Last Season Goals: %d%n", totalGames, totalMinutes, lastSeasonGoals);
     }
 }
 
-class BasketballPlayer extends Player {
-    private int totalGames;
-    private int totalMinutes;
-    private int totalPoints;
-
-    public BasketballPlayer(String nm, int by, int tg, int tm, int tp) {
-        super(nm, by);
-        totalGames = tg;
-        totalMinutes = tm;
-        totalPoints = tp;
-    }
-
-    @Override
-    public void printPersonalData() {
-        System.out.printf("Basketball Player: %s, Birth Year: %d, Age: %d%n", getName(), birthyear, NewMain.cal_age(birthyear));
-    }
-
-    @Override
-    public void printStat() {
-        System.out.printf("Total Games: %d, Total Minutes: %d, Total Points: %d%n", totalGames, totalMinutes, totalPoints);
-    }
-}
-
-public class NewMain {
-    public static void main(String[] args) {
-        String localDir = System.getProperty("user.dir");
-        System.out.println("Current directory = " + localDir + "\n");
-
-        String path = "src/main/java/Ex3_6680170/";
-        String inFilename = path + "players.txt";
-
-        Player[] members = new Player[12];
-        int num = 0;
-
-        try {
-            File inFile = new File(inFilename);
-            Scanner fileScan = new Scanner(inFile);
-
-            while (fileScan.hasNextLine()) {
-                String line = fileScan.nextLine();
+/* Main program */
+public class Main {
+    public static void main(String[] args){
+        Player[] allPlayers = new Player[12]; /* 12 players */
+        try (Scanner scan = new Scanner(new File(" NAME OF FILE NA TEATREE <3 (.txt)"))){
+            int i=0;
+            while(scan.hasNextLine()){ /* read .txt file line by line build-in function of java.io.FileNotFoundException na */
+                String line = scan.nextLine(); /* Assign text */
                 String[] cols = line.split(",");
-                String type = cols[0].trim();
-                String name = cols[1].trim();
-                int year = Integer.parseInt(cols[2].trim());
-
-                if (type.equalsIgnoreCase("B")) {
-                    int tg1 = Integer.parseInt(cols[3].trim());
-                    int tm1 = Integer.parseInt(cols[4].trim());
-                    int tp = Integer.parseInt(cols[5].trim());
-                    members[num++] = new BasketballPlayer(name, year, tg1, tm1, tp);
-                } else if (type.equalsIgnoreCase("F")) {
-                    int tg2 = Integer.parseInt(cols[3].trim());
-                    int tm2 = Integer.parseInt(cols[4].trim());
-                    int lg = Integer.parseInt(cols[5].trim());
-                    members[num++] = new FootballPlayer(name, year, tg2, tm2, lg);
-                }
+                String type = cols[0],trim();
+                String name = cols[1],trim();
+                int birthyear = Integer.parseInt(cols[2].trim());
             }
-
-            fileScan.close();
-        } catch (Exception e) {
-            System.err.println("An error occurred. End program.");
-            System.err.println(e);
-            System.exit(-1);
         }
-
-        // Print players' data
-        for (int i = 0; i < num; i++) {
-            members[i].printPersonalData();
-            members[i].printStat();
-            System.out.println();
-        }
-    }
-
-    public static int cal_age(int year) {
-        return Player.CURRENT_YEAR - year;
     }
 }
